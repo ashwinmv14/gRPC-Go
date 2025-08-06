@@ -1,0 +1,57 @@
+server:
+  host: "0.0.0.0"
+  port: 8080
+  graceful_timeout: "30s"
+  max_receive_size: 4194304  # 4MB
+  max_send_size: 4194304     # 4MB
+  connection_timeout: "5s"
+  keep_alive_time: "30s"
+  keep_alive_timeout: "5s"
+
+database:
+  type: "file"  # Options: file, redis, mongodb
+
+redis:
+  host: "localhost"
+  port: 6379
+  password: ""
+  db: 0
+  pool_size: 10
+  min_idle_conns: 5
+  dial_timeout: "5s"
+  read_timeout: "3s"
+  write_timeout: "3s"
+
+mongodb:
+  uri: "mongodb://localhost:27017"
+  database: "ad_events"
+  collection: "events"
+  connect_timeout: "10s"
+  max_pool_size: 100
+  min_pool_size: 10
+
+batch:
+  size: 100
+  flush_interval: "5s"
+  max_buffer_size: 10000
+  worker_pool_size: 5
+  max_retries: 3
+  retry_backoff_base: "1s"
+  channel_buffer_size: 1000
+  enable_compression: true
+
+metrics:
+  enabled: true
+  host: "0.0.0.0"
+  port: 9090
+  path: "/metrics"
+
+logging:
+  level: "info"       # debug, info, warn, error
+  format: "json"      # json, text
+  output: "stdout"    # stdout, file
+  filename: "logs/ad-event-processor.log"
+  max_size: 100       # megabytes
+  max_backups: 3      # number of files
+  max_age: 28         # days
+  compress: true

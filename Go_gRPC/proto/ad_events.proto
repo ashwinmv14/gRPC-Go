@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package adevent;
+
+option go_package = "ad-event-processor/proto/adevent";
+
+import "google/protobuf/timestamp.proto";
+
+// AdEvent represents a single ad event in the system
+message AdEvent {
+  // Unique identifier for the event
+  string event_id = 1;
+  
+  // Timestamp when the event occurred
+  google.protobuf.Timestamp timestamp = 2;
+  
+  // User who triggered the event
+  string user_id = 3;
+  
+  // Advertisement identifier
+  string ad_id = 4;
+  
+  // Type of ad event
+  EventType event_type = 5;
+  
+  // Additional metadata
+  map<string, string> metadata = 6;
+  
+  // Session information
+  string session_id = 7;
+  
+  // Device information
+  DeviceInfo device = 8;
+  
+  // Geographic information
+  GeoLocation geo_location = 9;
+}
+
+// EventType defines the types of ad events
+enum EventType {
+  EVENT_TYPE_UNSPECIFIED = 0;
+  EVENT_TYPE_IMPRESSION = 1;  // Ad was displayed
+  EVENT_TYPE_CLICK = 2;       // Ad was clicked
+  EVENT_TYPE_VIEW = 3;        // Ad was viewed (e.g., video ad played)
+  EVENT_TYPE_CONVERSION = 4;  // User performed desired action
+  EVENT_TYPE_SKIP = 5;        // Ad was skipped
+  EVENT_TYPE_COMPLETE = 6;    // Ad was completed (full duration)
+  EVENT_TYPE_ERROR = 7;       // Error occurred during ad delivery
+}
+
+// DeviceInfo contains device-specific information
+message DeviceInfo {
+  string device_type = 1;     // mobile, desktop, tablet, tv
+  string operating_system = 2; // iOS, Android, Windows, etc.
+  string browser = 3;         // Chrome, Safari, Firefox, etc.
+  string user_agent = 4;      // Full user agent string
+}
+
+// GeoLocation contains geographic information
+message GeoLocation {
+  string country = 1;
+  string region = 2;
+  string city = 3;
+  double latitude = 4;
+  double longitude = 5;
+}
+
+// Request message for sending ad events
+message SendAdEventRequest {
+  AdEvent event = 1;
+}
+
+// Response message for ad event submission
+message SendAdEventResponse {
+  bool success = 1;
+  string message = 2;
+  string event_id = 3;
+}
+
+// Request for batch sending multiple ad events
+message SendAdEventBatchRequest {
+  repeated AdEvent events = 1;
+}
+
+// Response for batch ad event submission
+message SendAdEventBatchResponse {
+  bool success = 1;
+  string message = 2;
+  int32 processed_count = 3;
+  repeated string failed_event_ids = 4;
+}
+
+// Health check request
+message HealthCheckRequest {}
+
+// Health check response
+message HealthCheckResponse {
+  bool healthy = 1;
+  string status = 2;
+  map<string, string> details = 3;
+}
+
+// Service definition for Ad Event Processing
+service AdEventService {
+  // Send a single ad event
+  rpc SendAdEvent(SendAdEventRequest) returns (SendAdEventResponse);
+  
+  // Send multiple ad events in a batch
+  rpc SendAdEventBatch(SendAdEventBatchRequest) returns (SendAdEventBatchResponse);
+  
+  // Health check endpoint
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
